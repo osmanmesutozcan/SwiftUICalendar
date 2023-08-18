@@ -30,6 +30,8 @@ public enum Week: Int, CaseIterable {
     }
 }
 
+
+
 public enum Orientation {
     case horizontal
     case vertical
@@ -115,11 +117,14 @@ public struct YearMonth: Equatable, Hashable {
     internal func cellToDate(_ cellIndex: Int, startWithMonday: Bool) -> YearMonthDay {
         let gregorianCalendar = NSCalendar(calendarIdentifier: .gregorian)!
         var toDateComponent = DateComponents()
+        
         toDateComponent.year = self.year
         toDateComponent.month = self.month
         toDateComponent.day = 1
+        
         let toDate = gregorianCalendar.date(from: toDateComponent)!
         let weekday = Calendar.current.component(.weekday, from: toDate) // 1Sun, 2Mon, 3Tue, 4Wed, 5Thu, 6Fri, 7Sat
+        
         var components = DateComponents()
         components.day = cellIndex - weekday + (!startWithMonday ? 1 : weekday == 1 ? (-5) : 2)
         let addedDate = Calendar.current.date(byAdding: components, to: toDate)!
@@ -191,6 +196,19 @@ public struct YearMonthDay: Equatable, Hashable {
         components.month = self.month
         components.day = self.day
         return components
+    }
+    
+    public var monthShortString: String {
+        get {
+            var components = toDateComponents()
+            components.day = 1
+            components.hour = 0
+            components.minute = 0
+            components.second = 0
+            let formatter = DateFormatter()
+            formatter.dateFormat = "MMM"
+            return formatter.string(from: Calendar.current.date(from: components)!)
+        }
     }
     
     public func addDay(value: Int) -> YearMonthDay {
